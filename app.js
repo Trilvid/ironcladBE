@@ -202,7 +202,7 @@ app.post('/api/register', async (req, res) => {
       periodicProfit: 0,
       role: 'user',
       verified: false,
-      regNo: `${uuid}`
+      regNo: `${uuid}` // is this neccassary
     })
 
     const token = createToken(newUser.id);
