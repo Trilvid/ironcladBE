@@ -1307,12 +1307,12 @@ app.post('/api/invest', async (req, res) => {
     };
 
     const durations = {
-      '24h': 1,
-      '48h': 2,
-      '72h': 3,
-      'daily': 5,
-      '15d': 15,
-      '30d': 30,
+      '3d': 3,
+      '4d': 4,
+      '7d': 7,
+      '8d': 8,
+      '10d': 10,
+      '12d': 12,
     };
 
     const duration = req.body.duration;
@@ -1334,7 +1334,7 @@ app.post('/api/invest', async (req, res) => {
 
     const profit = calculateProfit(req.body.amount, profitPercent);
 
-    if (user.capital >= req.body.amount) {
+    if (user.funded >= req.body.amount) {
       const now = new Date();
       const endDate = new Date(now.getTime() + durationInMilliseconds);
       await User.updateOne(
