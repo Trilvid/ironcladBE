@@ -532,22 +532,22 @@ app.post('/api/debitwallet', async (req, res) => {
     await User.updateOne(
       { email: email }, {
       $set: {
-        funded: incomingAmount - user.funded
+        funded: user.funded - incomingAmount
       }
     }
     )
     return res.json({ status: 'ok', funded: req.body.amount, name: user.username, email: user.email })
     }
   }
-  else if(acct === 'copybal') {
+  else if(acct === 'refBonus') {
 
-    if(incomingAmount >= user.copybal) {
+    if(incomingAmount >= user.refBonus) {
       return res.json({status: 400, message: "Insufficent balance chief"})
     } else {
     await User.updateOne(
       { email: email }, {
       $set: {
-        copybal: incomingAmount - user.copybal
+        copybal: user.refBonus - incomingAmount
       }
     }
     )
@@ -562,59 +562,13 @@ app.post('/api/debitwallet', async (req, res) => {
     await User.updateOne(
       { email: email }, {
       $set: {
-        totalprofit: incomingAmount - user.totalprofit
+        totalprofit: user.totalprofit - incomingAmount
       }
     }
     )
    return res.json({ status: 'ok', funded: req.body.amount, name: user.username, email: user.email })
   }
-  }
-  else if(acct === 'fundedacctbal') {
-
-    if(incomingAmount >= user.fundedacctbal) {
-      return res.json({status: 400, message: "Insufficent balance chief"})
-    } else {
-    await User.updateOne(
-      { email: email }, {
-      $set: {
-        fundedacctbal: incomingAmount - user.fundedacctbal
-      }
-    }
-    )
-   return res.json({ status: 'ok', funded: req.body.amount, name: user.username, email: user.email })
-  }
-  }
-  else if(acct === 'netbal') {
-
-    if(incomingAmount >= user.netbal) {
-      return res.json({status: 400, message: "Insufficent balance chief"})
-    } else {
-    await User.updateOne(
-      { email: email }, {
-      $set: {
-        netbal: incomingAmount - user.netbal
-      }
-    }
-    )
-   return res.json({ status: 'ok', funded: req.body.amount, name: user.username, email: user.email })
-  }
-  }
-  else if(acct === 'demobal') {
-
-    if(incomingAmount >= user.demobal) {
-      return res.json({status: 400, message: "Insufficent balance chief"})
-    } else {
-    await User.updateOne(
-      { email: email }, {
-      $set: {
-        demobal: incomingAmount - user.demobal
-      }
-    }
-    )
-   return res.json({ status: 'ok', funded: req.body.amount, name: user.username, email: user.email })
-  }
-  }
-  else {
+  }  else {
     return res.json({
       status: 400,
       message: "Sorry something went run."
