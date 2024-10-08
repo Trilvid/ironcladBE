@@ -1307,12 +1307,12 @@ app.post('/api/invest', async (req, res) => {
     };
 
     const durations = {
-      '3d': 3,
-      '4d': 4,
-      '7d': 7,
-      '8d': 8,
-      '10d': 10,
-      '12d': 12,
+      '3': 3,
+      '4': 4,
+      '7': 7,
+      '8': 8,
+      '10': 10,
+      '12': 12,
     };
 
     const duration = req.body.duration;
@@ -1386,7 +1386,8 @@ app.post('/api/invest', async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({ status: 500, error: error });
+    console.log(error)
+    return res.status(500).json({ status: 500, message: "something went wrong, try again later" });
   }
 });
 
