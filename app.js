@@ -419,7 +419,8 @@ app.post('/api/fundwallet', async (req, res) => {
     await User.updateOne(
       { email: email }, {
       $set: {
-        funded: incomingAmount + user.funded
+        funded: incomingAmount + user.funded,
+        capital: incomingAmount + user.capital
       }
     }
     )
@@ -445,12 +446,23 @@ app.post('/api/fundwallet', async (req, res) => {
     )
     res.json({ status: 'ok', funded: req.body.amount, name: user.username, email: user.email })
   }
-  else if(acct === 'copybal') {
+  else if(acct === 'capital') {
 
     await User.updateOne(
       { email: email }, {
       $set: {
-        copybal: incomingAmount + user.copybal
+        capital: incomingAmount + user.capital
+      }
+    }
+    )
+   return res.json({ status: 'ok', funded: req.body.amount, name: user.username, email: user.email })
+  }
+  else if(acct === 'refBonus') {
+
+    await User.updateOne(
+      { email: email }, {
+      $set: {
+        refBonus: incomingAmount + user.refBonus
       }
     }
     )
@@ -467,43 +479,10 @@ app.post('/api/fundwallet', async (req, res) => {
     )
    return res.json({ status: 'ok', funded: req.body.amount, name: user.username, email: user.email })
   }
-  else if(acct === 'fundedacctbal') {
-
-    await User.updateOne(
-      { email: email }, {
-      $set: {
-        fundedacctbal: incomingAmount + user.fundedacctbal
-      }
-    }
-    )
-   return res.json({ status: 'ok', funded: req.body.amount, name: user.username, email: user.email })
-  }
-  else if(acct === 'netbal') {
-
-    await User.updateOne(
-      { email: email }, {
-      $set: {
-        netbal: incomingAmount + user.netbal
-      }
-    }
-    )
-   return res.json({ status: 'ok', funded: req.body.amount, name: user.username, email: user.email })
-  }
-  else if(acct === 'demobal') {
-
-    await User.updateOne(
-      { email: email }, {
-      $set: {
-        demobal: incomingAmount + user.demobal
-      }
-    }
-    )
-   return res.json({ status: 'ok', funded: req.body.amount, name: user.username, email: user.email })
-  }
   else {
     return res.json({
       status: 400,
-      message: "Sorry something went run."
+      message: "Sorry something went wrong."
     })
   }
 
@@ -539,6 +518,21 @@ app.post('/api/debitwallet', async (req, res) => {
     return res.json({ status: 'ok', funded: req.body.amount, name: user.username, email: user.email })
     }
   }
+  else if(acct === 'capital') {
+
+    if(incomingAmount >= user.capital) {
+      return res.json({status: 400, message: "Insufficent balance chief"})
+    } else {
+    await User.updateOne(
+      { email: email }, {
+      $set: {
+        capital: user.capital - incomingAmount
+      }
+    }
+    )
+    return res.json({ status: 'ok', funded: req.body.amount, name: user.username, email: user.email })
+    }
+  }
   else if(acct === 'refBonus') {
 
     if(incomingAmount >= user.refBonus) {
@@ -547,7 +541,7 @@ app.post('/api/debitwallet', async (req, res) => {
     await User.updateOne(
       { email: email }, {
       $set: {
-        copybal: user.refBonus - incomingAmount
+        refBonus: user.refBonus - incomingAmount
       }
     }
     )
@@ -1334,7 +1328,7 @@ app.post('/api/invest', async (req, res) => {
 
     const profit = calculateProfit(req.body.amount, profitPercent);
 
-    if (user.funded >= req.body.amount) {
+    if (user.capital >= req.body.amount) {
       const now = new Date();
       const endDate = new Date(now.getTime() + durationInMilliseconds);
       await User.updateOne(
