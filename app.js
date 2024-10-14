@@ -1345,14 +1345,15 @@ app.post('/api/invest', async (req, res) => {
               profit: profit,
               ended: endDate.getTime(),
               started: now.getTime(),
-              periodicProfit: 0,
+              periodicProfit: profit,
+              period: duration
             },
             transaction: {
               type: 'investment',
               amount: req.body.amount,
               date: now.toLocaleString(),
               balance: user.funded,
-              id: crypto.randomBytes(10).toString('hex'),
+              id: crypto.randomBytes(6).toString('hex'),
             },
           },
         }
@@ -1370,9 +1371,9 @@ app.post('/api/invest', async (req, res) => {
       return res.json({
         status: 'ok',
         amount: req.body.amount,
-        name: user.firstname,
+        name: user.username,
         email: user.email,
-        periodicProfit: user.periodicProfit,
+        periodicProfit: profit,
       });
     } else {
       return res.status(400).json({
@@ -1404,7 +1405,7 @@ app.get('/api/cron', async (req, res) => {
     for (const user of users) {
       for (const investment of user.investment) {
         if (stopInvestment < investment.ended) { // Check if the duration of 5 days is completed
-          const increment = profitIncrement(investment.profit, 5);
+          const increment = profitIncrement(investment.profit, investment.period);
           console.log({
             endedDate: investment.ended,
             started: investment.started,
